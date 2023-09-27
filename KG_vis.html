@@ -1,0 +1,349 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "molecular modelling", "label": "molecular modelling", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Chemical structure", "label": "Chemical structure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Force fields", "label": "Force fields", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular dynamics", "label": "Molecular dynamics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Computational chemistry", "label": "Computational chemistry", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Energy minimization", "label": "Energy minimization", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Protein-ligand interactions", "label": "Protein-ligand interactions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Quantum mechanics", "label": "Quantum mechanics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular docking", "label": "Molecular docking", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Simulations", "label": "Simulations", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Biomolecular systems", "label": "Biomolecular systems", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular formula", "label": "Molecular formula", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Bond types", "label": "Bond types", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Atomic coordinates", "label": "Atomic coordinates", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Structural isomers", "label": "Structural isomers", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Conformational analysis", "label": "Conformational analysis", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "molecular interactions", "label": "molecular interactions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "potential energies", "label": "potential energies", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "atomistic simulations", "label": "atomistic simulations", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Lennard-Jones potential", "label": "Lennard-Jones potential", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "electrostatic forces", "label": "electrostatic forces", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Simulation", "label": "Simulation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Force field", "label": "Force field", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Temperature", "label": "Temperature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Equilibration", "label": "Equilibration", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Trajectory", "label": "Trajectory", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "molecular dynamics", "label": "molecular dynamics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "force fields", "label": "force fields", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "quantum mechanics", "label": "quantum mechanics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "molecular mechanics", "label": "molecular mechanics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ab initio methods", "label": "ab initio methods", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Optimization", "label": "Optimization", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Potential energy surface", "label": "Potential energy surface", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Conformational changes", "label": "Conformational changes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Docking", "label": "Docking", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular Dynamics", "label": "Molecular Dynamics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Binding Affinity", "label": "Binding Affinity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Virtual Screening", "label": "Virtual Screening", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Scoring Functions", "label": "Scoring Functions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "wave function", "label": "wave function", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hamiltonian", "label": "Hamiltonian", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "probabilistic nature", "label": "probabilistic nature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "energy levels", "label": "energy levels", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "superposition", "label": "superposition", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Docking software", "label": "Docking software", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Binding affinity", "label": "Binding affinity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Drug discovery", "label": "Drug discovery", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular dynamics simulations", "label": "Molecular dynamics simulations", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Monte Carlo", "label": "Monte Carlo", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Monte Carlo Metropolis", "label": "Monte Carlo Metropolis", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Stochastic dynamics", "label": "Stochastic dynamics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Protein structures", "label": "Protein structures", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molecular interactions", "label": "Molecular interactions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Drug design", "label": "Drug design", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Rotamer libraries", "label": "Rotamer libraries", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Force field parametrization", "label": "Force field parametrization", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "molecular modelling", "to": "Chemical structure", "width": 1}, {"from": "molecular modelling", "to": "Force fields", "width": 1}, {"from": "molecular modelling", "to": "Molecular dynamics", "width": 1}, {"from": "molecular modelling", "to": "Computational chemistry", "width": 1}, {"from": "molecular modelling", "to": "Energy minimization", "width": 1}, {"from": "molecular modelling", "to": "Protein-ligand interactions", "width": 1}, {"from": "molecular modelling", "to": "Quantum mechanics", "width": 1}, {"from": "molecular modelling", "to": "Molecular docking", "width": 1}, {"from": "molecular modelling", "to": "Simulations", "width": 1}, {"from": "molecular modelling", "to": "Biomolecular systems", "width": 1}, {"from": "Chemical structure", "to": "Molecular formula", "width": 1}, {"from": "Chemical structure", "to": "Bond types", "width": 1}, {"from": "Chemical structure", "to": "Atomic coordinates", "width": 1}, {"from": "Chemical structure", "to": "Structural isomers", "width": 1}, {"from": "Chemical structure", "to": "Conformational analysis", "width": 1}, {"from": "Force fields", "to": "molecular interactions", "width": 1}, {"from": "Force fields", "to": "potential energies", "width": 1}, {"from": "Force fields", "to": "atomistic simulations", "width": 1}, {"from": "Force fields", "to": "Lennard-Jones potential", "width": 1}, {"from": "Force fields", "to": "electrostatic forces", "width": 1}, {"from": "Molecular dynamics", "to": "Simulation", "width": 1}, {"from": "Molecular dynamics", "to": "Force field", "width": 1}, {"from": "Molecular dynamics", "to": "Temperature", "width": 1}, {"from": "Molecular dynamics", "to": "Equilibration", "width": 1}, {"from": "Molecular dynamics", "to": "Trajectory", "width": 1}, {"from": "Computational chemistry", "to": "molecular dynamics", "width": 1}, {"from": "Computational chemistry", "to": "force fields", "width": 1}, {"from": "Computational chemistry", "to": "quantum mechanics", "width": 1}, {"from": "Computational chemistry", "to": "molecular mechanics", "width": 1}, {"from": "Computational chemistry", "to": "ab initio methods", "width": 1}, {"from": "Energy minimization", "to": "Optimization", "width": 1}, {"from": "Energy minimization", "to": "Potential energy surface", "width": 1}, {"from": "Energy minimization", "to": "Conformational changes", "width": 1}, {"from": "Protein-ligand interactions", "to": "Docking", "width": 1}, {"from": "Protein-ligand interactions", "to": "Molecular Dynamics", "width": 1}, {"from": "Protein-ligand interactions", "to": "Binding Affinity", "width": 1}, {"from": "Protein-ligand interactions", "to": "Virtual Screening", "width": 1}, {"from": "Protein-ligand interactions", "to": "Scoring Functions", "width": 1}, {"from": "Quantum mechanics", "to": "wave function", "width": 1}, {"from": "Quantum mechanics", "to": "Hamiltonian", "width": 1}, {"from": "Quantum mechanics", "to": "probabilistic nature", "width": 1}, {"from": "Quantum mechanics", "to": "energy levels", "width": 1}, {"from": "Quantum mechanics", "to": "superposition", "width": 1}, {"from": "Molecular docking", "to": "Docking software", "width": 1}, {"from": "Molecular docking", "to": "Binding affinity", "width": 1}, {"from": "Molecular docking", "to": "Drug discovery", "width": 1}, {"from": "Molecular docking", "to": "Molecular dynamics simulations", "width": 1}, {"from": "Simulations", "to": "Monte Carlo", "width": 1}, {"from": "Simulations", "to": "Monte Carlo Metropolis", "width": 1}, {"from": "Simulations", "to": "Stochastic dynamics", "width": 1}, {"from": "Biomolecular systems", "to": "Protein structures", "width": 1}, {"from": "Biomolecular systems", "to": "Molecular interactions", "width": 1}, {"from": "Biomolecular systems", "to": "Drug design", "width": 1}, {"from": "Biomolecular systems", "to": "Rotamer libraries", "width": 1}, {"from": "Biomolecular systems", "to": "Force field parametrization", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

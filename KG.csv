@@ -1,0 +1,150 @@
+from_node,to_node,weight
+molecular modelling,protein,0.79
+molecular modelling,ligand,0.82
+molecular modelling,docking,0.83
+molecular modelling,molecular dynamics,0.9
+molecular modelling,force field,0.78
+molecular modelling,simulation,0.83
+molecular modelling,energy minimization,0.79
+molecular modelling,conformation,0.83
+molecular modelling,binding affinity,0.79
+molecular modelling,structure prediction,0.81
+ligand,Receptor,0.86
+ligand,Docking,0.81
+ligand,Binding Site,0.84
+ligand,Pharmacophore,0.83
+ligand,Dissociation Constant,0.78
+docking,protein docking,0.93
+docking,ligand docking,0.91
+docking,molecular docking,0.92
+docking,docking algorithm,0.93
+docking,docking simulation,0.94
+molecular dynamics,force fields,0.8
+molecular dynamics,simulation software,0.81
+molecular dynamics,equations of motion,0.82
+molecular dynamics,integrator algorithms,0.76
+molecular dynamics,potential energy surface,0.79
+force field,Lennard-Jones,0.79
+force field,Electrostatics,0.79
+force field,Van der Waals,0.78
+force field,Nonbonded interactions,0.78
+force field,Atomistic potential,0.79
+simulation,molecular dynamics,0.81
+simulation,Monte Carlo simulation,0.85
+simulation,force fields,0.8
+simulation,energy minimization,0.79
+simulation,Brownian dynamics,0.8
+energy minimization,force field,0.78
+energy minimization,conformer,0.78
+energy minimization,geometry optimization,0.83
+energy minimization,energy landscape,0.86
+energy minimization,atomistic model,0.77
+energy minimization,molecular mechanics,0.79
+energy minimization,conformational search,0.79
+energy minimization,optimization algorithms,0.83
+energy minimization,potential energy surface,0.84
+conformation,torsion angle,0.8
+conformation,steric clashes,0.81
+conformation,hydrogen bonding,0.81
+conformation,minimization,0.8
+conformation,Ramachandran plot,0.77
+binding affinity,protein-ligand binding,0.86
+binding affinity,Kd value,0.76
+binding affinity,docking score,0.78
+binding affinity,binding free energy,0.87
+binding affinity,binding site interactions,0.88
+structure prediction,protein structure,0.82
+structure prediction,ligand binding,0.76
+structure prediction,energy minimization,0.75
+structure prediction,docking simulation,0.78
+structure prediction,homology modeling,0.81
+ligand docking,Protein-ligand interactions,0.89
+ligand docking,Molecular docking software,0.91
+ligand docking,Virtual screening,0.8
+ligand docking,Binding affinity,0.83
+ligand docking,Scoring functions,0.75
+docking simulation,Protein-Ligand Docking,0.87
+docking simulation,Molecular Docking,0.9
+docking simulation,Virtual Screening,0.81
+docking simulation,Ligand Binding,0.81
+docking simulation,Active Site Prediction,0.8
+protein structure,amino acid sequence,0.84
+protein structure,secondary structure,0.87
+protein structure,tertiary structure,0.86
+protein structure,quaternary structure,0.85
+protein structure,protein folding,0.89
+homology modeling,protein structure prediction,0.83
+homology modeling,3D model building,0.83
+homology modeling,alignment of sequences,0.8
+homology modeling,template-based modeling,0.87
+homology modeling,accuracy assessment,0.74
+protein structure prediction,secondary structure prediction,0.92
+protein structure prediction,tertiary structure prediction,0.91
+protein structure prediction,homology modeling,0.83
+protein structure prediction,ab initio modeling,0.82
+protein structure prediction,de novo modeling,0.79
+protein structure prediction,Homology modeling,0.84
+protein structure prediction,Ab initio prediction,0.86
+protein structure prediction,Fold recognition,0.78
+protein structure prediction,Threading,0.72
+protein structure prediction,Protein structure refinement,0.9
+3D model building,Protein structure,0.79
+3D model building,Ligand design,0.79
+3D model building,Macromolecular assembly,0.79
+3D model building,Molecular docking,0.8
+3D model building,Visualization tools,0.82
+alignment of sequences,Sequence alignment,0.93
+alignment of sequences,Homology modeling,0.8
+alignment of sequences,Multiple sequence alignment,0.93
+alignment of sequences,Structural superposition,0.78
+alignment of sequences,Comparative modeling,0.76
+template-based modeling,Homology modeling,0.87
+template-based modeling,Threading,0.8
+template-based modeling,Protein structure prediction,0.78
+template-based modeling,Model refinement,0.85
+template-based modeling,Structure alignment,0.79
+accuracy assessment,RMSD calculation,0.77
+accuracy assessment,protein structure prediction,0.74
+accuracy assessment,ligand binding affinity,0.74
+accuracy assessment,force field optimization,0.75
+accuracy assessment,protein docking analysis,0.75
+RMSD calculation,Root Mean Square Deviation,0.83
+RMSD calculation,Structural Alignment,0.75
+RMSD calculation,Protein Conformation,0.8
+RMSD calculation,Structural Changes,0.73
+RMSD calculation,Molecular Docking,0.84
+ligand binding affinity,protein-ligand interactions,0.87
+ligand binding affinity,docking energy,0.82
+ligand binding affinity,binding site,0.85
+ligand binding affinity,binding affinity prediction,0.89
+ligand binding affinity,scoring function,0.74
+force field optimization,energy minimization,0.82
+force field optimization,parameter optimization,0.86
+force field optimization,molecular dynamics simulations,0.79
+force field optimization,steepest descent,0.76
+force field optimization,genetic algorithm,0.79
+protein docking analysis,protein binding,0.85
+protein docking analysis,molecular interaction,0.81
+protein docking analysis,ligand docking,0.91
+protein docking analysis,docking energy,0.88
+protein docking analysis,protein-protein interactions,0.85
+docking energy,binding energy,0.89
+docking energy,ligand interactions,0.83
+docking energy,receptor conformation,0.81
+docking energy,hydrophobic interactions,0.8
+docking energy,polar interactions,0.81
+protein binding,Protein-protein interactions,0.87
+protein binding,Binding affinities,0.87
+protein binding,Molecular docking,0.84
+protein binding,Homology modeling,0.79
+protein binding,Binding pockets,0.84
+molecular interaction,protein-ligand binding,0.85
+molecular interaction,enzyme-substrate interaction,0.87
+molecular interaction,protein-protein interaction,0.9
+molecular interaction,ligand-receptor binding,0.85
+molecular interaction,molecular docking,0.9
+protein-protein interactions,protein-protein docking,0.92
+protein-protein interactions,protein-protein binding,0.94
+protein-protein interactions,protein-protein interface,0.96
+protein-protein interactions,protein-protein complexes,0.95
+protein-protein interactions,protein-protein analysis,0.91
